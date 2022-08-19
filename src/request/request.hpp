@@ -5,29 +5,27 @@
 
 namespace express {
 
-	class request {
-        typedef std::string routePath;
+class request {
+    typedef std::string routePath;
 
-    public:
+  public:
+    typedef std::map<std::string, std::string> header_map;
 
-        typedef std::map<std::string, std::string> header_map;
+    request(std::shared_ptr<HttpServer::Request>, paramMap parameters, queryMap queries,
+            header_map &h);
 
-        request(std::shared_ptr<HttpServer::Request>,paramMap parameters, queryMap queries, header_map &h);
+    bool is(std::string type);
 
-        bool is(std::string type);
+    property_readonly<paramMap> params;
+    queryMap query;
+    header_map headers;
+    const routePath route;
+    bodyContent &body;
 
+  private:
+    std::shared_ptr<HttpServer::Request> _req;
+};
 
-        property_readonly<paramMap> params;
-        queryMap query;
-        header_map headers;
-        const routePath route;
-        bodyContent& body;
-
-    private:
-        std::shared_ptr<HttpServer::Request> _req;
-
-	};
-
-}
+}  // namespace express
 
 #endif

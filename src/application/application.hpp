@@ -8,49 +8,44 @@
 
 namespace express {
 
-    typedef std::function<void(request,response)> routeHandler;
-    struct handler {
-        routeHandler func;
-        regx_params params;
-    };
-    typedef std::map<http_verb,handler> actions;
-    typedef std::map<routePath,actions> dispatcherMap;
-    typedef std::vector<boost::filesystem::path> static_routes;
-    typedef std::string default_file;
+typedef std::function<void(request, response)> routeHandler;
+struct handler {
+    routeHandler func;
+    regx_params params;
+};
+typedef std::map<http_verb, handler> actions;
+typedef std::map<routePath, actions> dispatcherMap;
+typedef std::vector<boost::filesystem::path> static_routes;
+typedef std::string default_file;
 
+class application {
+  public:
+    application();
 
-    class application
-    {
-    public:
+    void del(const routePath route, const routeHandler rHandler);
+    void get(const routePath route, const routeHandler rHandler);
+    void post(const routePath route, const routeHandler rHandler);
+    void put(const routePath route, const routeHandler rHandler);
 
-        application();
+    void static_(const boost::filesystem::path);
+    void default_(const std::string);
 
-        void del(const routePath route,const routeHandler rHandler);
-        void get(const routePath route,const routeHandler rHandler);
-        void post(const routePath route,const routeHandler rHandler);
-        void put(const routePath route,const routeHandler rHandler);
+    void listen(int port, std::string address = "");
 
-        void static_(const boost::filesystem::path);
-        void default_(const std::string);
+  private:
+    void connect_route(const http_verb verb, std::shared_ptr<HttpServer::Response> res,
+                       std::shared_ptr<HttpServer::Request> req);
+    void extract_parameters(const routePath clientPath, const routePath serverRegx,
+                            regx_params &regParamList, paramMap &pMap);
+    void extract_query(routePath &clientPath, queryMap &query);
+    void register_route(const http_verb verb, const routePath route, const routeHandler rHandler);
+    bool match_file(express::response &_res, std::string path);
 
-        void listen(int port, std::string address ="");
+    dispatcherMap _routing;
+    static_routes _static_routes;
+    default_file _default_file;
+};
 
-    private:
-
-        void connect_route(const http_verb verb,std::shared_ptr<HttpServer::Response> res,std::shared_ptr<HttpServer::Request> req);
-        void extract_parameters(const routePath clientPath,const routePath serverRegx,regx_params &regParamList,paramMap& pMap);
-        void extract_query(routePath &clientPath,queryMap &query);
-        void register_route(const http_verb verb,const routePath route,const routeHandler rHandler);
-        bool match_file(express::response &_res,std::string path);
-
-
-        dispatcherMap _routing;
-        static_routes _static_routes;
-        default_file _default_file;
-
-    };
-
-}
+}  // namespace express
 
 #endif
-

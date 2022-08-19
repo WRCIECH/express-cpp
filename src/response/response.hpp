@@ -5,24 +5,23 @@
 
 namespace express {
 
-	class response {
+class response {
+  public:
+    response(std::shared_ptr<HttpServer::Response> res);
 
-    public:
-		response(std::shared_ptr<HttpServer::Response> res);
+    void append(std::string header_name, std::string header_content);
+    // set content type to HTML
+    void send(htmlContent html);
+    // void send(JSON) -- array or JSON ?
+    // void send (Buffer) -- octet stream
 
-        void append(std::string header_name, std::string header_content);
-        //set content type to HTML
-        void send(htmlContent html);
-        //void send(JSON) -- array or JSON ?
-        //void send (Buffer) -- octet stream
+    void sendStatus(http_status status);
+    void sendFile(const boost::filesystem::path file);
 
-        void sendStatus(http_status status);
-        void sendFile(const boost::filesystem::path file);
+  private:
+    std::shared_ptr<HttpServer::Response> _res;
+    std::string _header_append;
+};
 
-    private:
-        std::shared_ptr<HttpServer::Response> _res;
-        std::string _header_append;
-	};
-
-}
+}  // namespace express
 #endif
