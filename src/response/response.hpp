@@ -7,16 +7,15 @@ namespace express {
 
 class response {
   public:
-    response(std::shared_ptr<HttpServer::Response> res);
+    explicit response(std::shared_ptr<HttpServer::Response> res);
 
-    void append(std::string header_name, std::string header_content);
-    // set content type to HTML
-    void send(htmlContent html);
-    // void send(JSON) -- array or JSON ?
+    void append(const std::string &header_name, std::string header_content);
+    void send(const htmlContent &html);
+    void json(std::string const &json);
     // void send (Buffer) -- octet stream
 
     void sendStatus(http_status status);
-    void sendFile(const boost::filesystem::path file);
+    void sendFile(const boost::filesystem::path &file);
 
   private:
     std::shared_ptr<HttpServer::Response> _res;

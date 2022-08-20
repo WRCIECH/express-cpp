@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <iterator>
+#include <utility>
 #include <vector>
 #include <fstream>
 #include <boost/iostreams/stream.hpp>
@@ -10,18 +11,24 @@
 
 using namespace express;
 
-response::response(std::shared_ptr<HttpServer::Response> res) : _res(res) {}
+response::response(std::shared_ptr<HttpServer::Response> res) : _res(std::move(res)) {}
 
-void response::append(std::string header_name, std::string header_content) {
+void response::append(const std::string &header_name, std::string header_content) {
     if (_header_append.empty()) _header_append += "\r\n";
 
     _header_append += header_name + ": " + header_content + "\r\n";
 }
 
-void response::send(htmlContent html) {
+void response::send(const htmlContent &html) {
     *_res << "HTTP/1.1 200 OK\r\nContent-Length: " << html.length() << "\r\n"
           << "Content-Type:text/html;charset=utf-8" << _header_append << "\r\n\r\n"
           << html;
+}
+
+void response::json(std::string const &json) {
+    *_res << "HTTP/1.1 200 OK\r\nContent-Length: " << json.length() << "\r\n"
+          << "Content-Type:application/json;charset=utf-8" << _header_append << "\r\n\r\n"
+          << json;
 }
 
 void response::sendStatus(http_status status) {
@@ -31,7 +38,7 @@ void response::sendStatus(http_status status) {
           << http_status_text[status];
 }
 
-void response::sendFile(const boost::filesystem::path file) {
+void response::sendFile(const boost::filesystem::path &file) {
     auto filesize = boost::filesystem::file_size(file);
     std::ifstream fileS(file.string());
     std::vector<char> vec(filesize);

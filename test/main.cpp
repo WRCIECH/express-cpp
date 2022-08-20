@@ -4,7 +4,7 @@
 
 typedef SimpleWeb::Client<SimpleWeb::HTTP> HttpClient;
 
-int main(int argc, char **argv) {
+int main() {
     express::application app;
 
     app.get("/hello", [](express::request req, express::response res) {
@@ -12,12 +12,18 @@ int main(int argc, char **argv) {
         res.send("World !");
     });
 
+    app.get("/json", [](express::request req, express::response res) {
+        res.json(R"json(
+            { "key": "value", "array": [ "value_1", "value_2", "value_3" ] }
+        )json");
+    });
+
     app.get("/hello/:world", [](express::request req, express::response res) {
-        std::cout << "HEADER IN USER AGENT=" << req.headers["User-Agent"] << std::endl;
+        std::cout << "HEADER IN USER AGENT=" << req.headers["User-Agent"] << std::endl;
         if (req.is("HTML")) {
             std::cout << "Accept content html" << std::endl;
         }
-        res.send("World=" + req.params["world"] + "-- query [param1]=" + req.query["param1"] +
+        res.send("World=" + req.params["world"] + "--query [param1]=" + req.query["param1"] +
                  " [param2]=" + req.query["param2"]);
     });
 
@@ -27,7 +33,7 @@ int main(int argc, char **argv) {
     });
 
     app.post("/my/lamp", [](express::request req, express::response res) {
-        res.send("GOT IT POSTED ! - GOT:" + req.body.string());
+        res.send("GOT IT POSTED! - GOT:" + req.body.string());
     });
 
     app.static_("/Users/linkineo/Devl/express-cpp/build");

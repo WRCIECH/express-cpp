@@ -5,7 +5,7 @@ import pathlib
 
 def main(check_run: bool):
     current_path = pathlib.Path().resolve()
-    exclude = [".git", "third_party", "scripts", "cmake", "visualization", ".idea", "__pycache__"]
+    exclude = [".git", "third_party", "Simple-Web-Server", "scripts", "cmake", "visualization", ".idea", "__pycache__"]
 
     additional_options = ""
     if check_run:
